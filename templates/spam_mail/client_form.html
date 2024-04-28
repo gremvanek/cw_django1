@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+{% block content %}
+<div style="text-align: center; color: rgba(0, 0, 0, 0.5);">
+  <h2>{% if not form.instance.pk %}Создать{% else %}Изменить{% endif %}</h2>
+  <form method="post" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; margin-top: 10px; border-radius: 3px; cursor: pointer;">Сохранить</button>
+  </form>
+</div>
+{% endblock %}

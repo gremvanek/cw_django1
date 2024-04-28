@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Подтверждение удаления</h5>
+        <p class="card-text">Вы уверены, что хотите удалить рассылку "{{ mailing.pk }}"?</p>
+        <form method="post" action="{% url 'mailing_delete' object.pk %}" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="pk" value="{{ mailing.pk }}">
+            <button type="submit" class="btn btn-danger">Удалить</button>
+            <a href="{% url 'mailing_list' %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
