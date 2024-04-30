@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Client(models.Model):
@@ -27,8 +28,7 @@ class Client(models.Model):
 
 class Mailing(models.Model):
     client = models.ManyToManyField(Client, verbose_name="Клиенты")
-    send_time = models.DateTimeField(verbose_name="Время отправки")
-
+    send_time = models.DateTimeField(default=timezone.now, verbose_name="Время отправки")
     frequency_choices = [
         ('daily', 'Раз в день'),
         ('weekly', 'Раз в неделю'),
@@ -43,15 +43,18 @@ class Mailing(models.Model):
     ]
     status = models.CharField(max_length=10, choices=status_choices, verbose_name="Статус")
 
+    def __str__(self):
+        return f"Рассылка № {self.pk}"
+
 
 class Message(models.Model):
-    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name="Рассылка")
+    mailing = models.OneToOneField(Mailing, on_delete=models.CASCADE, verbose_name="Рассылка", related_name="message")
     subject = models.CharField(max_length=255, verbose_name="Тема письма")
     body = models.TextField(verbose_name="Содержание письма")
 
 
 class MailingLog(models.Model):
-    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name="Рассылка")
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name="Рассылка", related_name="logs")
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время последней попытки")
     status = models.CharField(max_length=10, verbose_name="Статус попытки")
     server_response = models.TextField(verbose_name="Ответ почтового сервера")

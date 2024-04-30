@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import dj_database_url
+from celery.schedules import crontab
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,6 +22,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_celery_beat',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -28,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "spam_mailing",
+    "user"
 ]
 
 MIDDLEWARE = [
@@ -45,7 +48,7 @@ ROOT_URLCONF = "new.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -90,7 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "ru-ru"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Yekaterinburg"
 
 USE_I18N = True
 
@@ -113,13 +116,28 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Настройки для Users
+AUTH_USER_MODEL = 'user.User'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+# Настройки для рассылки сообщений
 EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)
-EMAIL_USE_SSL = True
+EMAIL_USE_TSL = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-
+# # Настройки Celery
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+# # Настройки для Celery beat
+# CELERY_BEAT_SCHEDULE = {
+#     'daily_mailing_task': {
+#         'task': 'spam_mailing.tasks.send_emails',
+#         'schedule': crontab(hour=0, minute=0),
+#     },
+# }
+# Настройки кеша
 CACHE_ENABLED = True
 if CACHE_ENABLED:
     CACHES = {

@@ -3,15 +3,15 @@
 {% block content %}
   <div class="client-list" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
     <div style="text-align: center; color: rgba(0, 0, 0, 0.5);">
-      <a href="{% url 'mailing_create' %}" class="btn btn-primary mt-2">Создать рассылку</a>
+      <a href="{% url 'spam_mailing:mailing_create' %}" class="btn btn-primary mt-2">Создать рассылку</a>
       <h2 class="mt-2">Список рассылок</h2>
       <ul>
-        {% for mailing in object_list %}
-          <li>
-            <strong>{{ mailing }}</strong><br>
+        {% for mailing in mailings %}
+          <li style="mk max-width: 100px; margin: auto; padding: 5px; border: 10px solid #ccc; border-radius: 10px; background-color: rgba(255, 255, 255, 0.8);">
+            <strong>{{ mailing }}</strong>
             {{ mailing.description }}
-            <a href="{% url 'mailing_update' mailing.pk %}" class="btn btn-info btn-sm">Изменить</a>
-            <form method="post" style="display: inline;">
+            <a href="{% url 'spam_mailing:mailing_update' mailing.pk %}" class="btn btn-info btn-sm">Изменить</a>
+            <form method="post" action="{% url 'spam_mailing:mailing_delete' mailing.pk %}" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите удалить клиента?');">
               {% csrf_token %}
               <input type="hidden" name="pk" value="{{ mailing.pk }}">
               <button type="submit" class="btn btn-danger btn-sm">Удалить</button>

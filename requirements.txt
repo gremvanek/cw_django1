@@ -1,4 +1,4 @@
-Django==5.0.4
+Django~=4.2.6
 django-bootstrap4==24.1
 ipython==8.22.2
 psycopg2-binary==2.9.9
@@ -11,3 +11,5 @@ config~=0.5.1
 decouple~=0.0.7
 redis==5.0.3
 flake8==7.0.0
+celery~=5.4.0
+APScheduler~=3.10.4

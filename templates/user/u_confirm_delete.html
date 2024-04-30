@@ -1,8 +1,8 @@
 {% extends 'index.html' %}
 
 {% block content %}
-<h1>Подтверждение удаления сообщения</h1>
-<p>Вы уверены, что хотите удалить сообщение {{ message.title }} {{ message.body }}?</p>
+<h1>Подтверждение удаления пользователя</h1>
+<p>Вы уверены, что хотите удалить пользователя {{ user.email }}?</p>
 <<form method="post" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">>
     {% csrf_token %}
     <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; margin-top: 10px; border-radius: 3px; cursor: pointer;">Удалить</button>

@@ -4,14 +4,14 @@
 <div class="other-background">
   <div class="client-list" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
     <div style="text-align: center; color: rgba(0, 0, 0, 0.5);">
-      <a href="{% url 'client_create' %}" class="btn btn-primary mt-2">Создать клиента</a>
+      <a href="{% url 'spam_mailing:client_create' %}" class="btn btn-primary mt-2">Создать клиента</a>
       <h2 class="mt-2">Список кукушат</h2>
       <ul>
         {% for client in clients %}
-          <li>
+          <li style="mk-2 max-width: 200px; margin: auto; padding: 1px; border: 1px solid #ccc; border-radius: 10px; background-color: rgba(255, 255, 255, 0.8);">
             {{client.email}}
-            <a href="{% url 'client_update' client.pk %}" class="btn btn-info btn-sm">Изменить</a>
-            <form method="post" action="{% url 'client_delete' client.pk %}" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите удалить клиента?');">
+            <a href="{% url 'spam_mailing:client_update' client.pk %}" class="btn btn-info btn-sm">Изменить</a>
+            <form method="post" action="{% url 'spam_mailing:client_delete' client.pk %}" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите удалить клиента?');">
               {% csrf_token %}
               <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
             </form>
