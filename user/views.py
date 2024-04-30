@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
@@ -86,14 +87,17 @@ class UserLoginView(View):
     @staticmethod
     def post(request):
         form = UserLoginForm(request.POST)
+        password = request.POST.get('password')  # Получаем пароль до проверки на валидность
         if form.is_valid():
             email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            user = authenticate(request, email=email, password=password)  # Да что ж такое-то!
-            if user is not None:
-                login(request, user)
-                messages.success(request, 'Вы успешно вошли.')
-                return redirect('user:u_list')
+            try:
+                user = User.objects.get(email=email)
+                if check_password(password, user.password):
+                    login(request, user)
+                    messages.success(request, 'Вы успешно вошли.')
+                    return redirect('spam_mailing:client_list')
+            except User.DoesNotExist:
+                pass
         messages.error(request, 'Неправильный email или пароль.')
         return render(request, 'user/u_login.html', {'form': form})
 
@@ -112,13 +116,11 @@ def generate_verification_code(length=6):
 
 
 class UserRegisterView(View):
-    @staticmethod
-    def get(request):
+    def get(self, request):
         form = UserRegistrationForm()
         return render(request, 'user/u_register.html', {'form': form})
 
-    @staticmethod
-    def post(request):
+    def post(self, request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
@@ -139,7 +141,7 @@ class UserRegisterView(View):
             return redirect('user:u_login')
         else:
             messages.error(request, 'Ошибка регистрации. Пожалуйста, проверьте данные.')
-            return redirect('user:u_register')
+            return render(request, 'user/u_register.html', {'form': form})
 
 
 def send_verification_email(email, verification_code, username):
