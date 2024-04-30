@@ -1,0 +1,14 @@
+<!-- verification_error.html -->
+{% extends 'index.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <p>Пользователь уже аутентифицирован. Вы уже подтвердили свой адрес электронной почты.</p>
+{% else %}
+    {% if verification_code %}
+        <p>Ваш адрес электронной почты успешно подтвержден.</p>
+    {% elif user.is_authenticated and verification_code == None %}
+        <p>Отсутствует код подтверждения. Пожалуйста, проверьте ссылку в вашем письме.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

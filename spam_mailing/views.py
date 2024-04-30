@@ -7,20 +7,24 @@ from spam_mailing.models import Client, Mailing, Message
 
 
 def home_page(request):
+    """Отображение домашней страницы."""
     return render(request, 'index.html')
 
 
 def client_list(request):
+    """Отображение списка клиентов."""
     clients = Client.objects.all()
     return render(request, 'spam_mail/client_list.html', {'clients': clients})
 
 
 def client_detail(request, pk):
+    """Отображение деталей клиента."""
     client = Client.objects.get(pk=pk)
     return render(request, 'spam_mail/client_detail.html', {'client': client})
 
 
 def client_create(request):
+    """Создание нового клиента."""
     if request.method == 'POST':
         form = ClientForm(request.POST)
         if form.is_valid():
@@ -32,6 +36,7 @@ def client_create(request):
 
 
 def client_update(request, pk):
+    """Обновление информации о клиенте."""
     client = Client.objects.get(pk=pk)
     if request.method == 'POST':
         form = ClientForm(request.POST, instance=client)
@@ -44,6 +49,7 @@ def client_update(request, pk):
 
 
 def client_delete(request, pk):
+    """Удаление клиента."""
     client = Client.objects.get(pk=pk)
     if request.method == 'POST':
         client.delete()
@@ -52,11 +58,13 @@ def client_delete(request, pk):
 
 
 def mailing_list(request):
+    """Отображение списка рассылок."""
     mailings = Mailing.objects.all()
     return render(request, 'spam_mail/mailing/mailing_list.html', {'mailings': mailings})
 
 
 class MailingCreateView(CreateView):
+    """Создание новой рассылки."""
     model = Mailing
     form_class = MailingForm
     template_name = 'spam_mail/mailing/mailing_form.html'
@@ -64,6 +72,7 @@ class MailingCreateView(CreateView):
 
 
 class MailingUpdateView(UpdateView):
+    """Обновление информации о рассылке."""
     model = Mailing
     form_class = MailingForm
     template_name = 'spam_mail/mailing/mailing_form.html'
@@ -71,16 +80,19 @@ class MailingUpdateView(UpdateView):
 
 
 class MailingDeleteView(DeleteView):
+    """Удаление рассылки."""
     model = Mailing
     success_url = reverse_lazy('spam:mailing_list')
 
 
 def message_list(request):
+    """Отображение списка сообщений."""
     messages = Message.objects.all()
     return render(request, 'spam_mail/message/message_list.html', {'messages': messages})
 
 
 class MessageCreateView(CreateView):
+    """Создание нового сообщения."""
     model = Message
     form_class = MessageForm
     template_name = 'spam_mail/message/message_form.html'
@@ -88,6 +100,7 @@ class MessageCreateView(CreateView):
 
 
 class MessageUpdateView(UpdateView):
+    """Обновление информации о сообщении."""
     model = Message
     form_class = MessageForm
     template_name = 'spam_mail/message/message_form.html'
@@ -95,5 +108,6 @@ class MessageUpdateView(UpdateView):
 
 
 class MessageDeleteView(DeleteView):
+    """Удаление сообщения."""
     model = Message
     success_url = reverse_lazy('spam:message_list')

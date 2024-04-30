@@ -118,6 +118,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Настройки для Users
 AUTH_USER_MODEL = 'user.User'
+AUTH_USER_NAME = 'email'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 # Настройки для рассылки сообщений

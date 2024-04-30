@@ -12,7 +12,10 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='users/', verbose_name='Аватар', **NULLABLE)
     country = models.CharField(max_length=35, verbose_name='Страна', **NULLABLE)
 
-    token = models.CharField(max_length=10, verbose_name='токен', **NULLABLE)
+    is_verified = models.BooleanField(default=False, verbose_name='Верификация')
+    verification_code = models.CharField(max_length=100, verbose_name='Код верификации', **NULLABLE)
+
+    have_permissions = models.BooleanField(default=False, verbose_name='Права доступа')
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

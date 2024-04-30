@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li style="padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="post" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Зарегистрировать</button>
+    </form>
+</div>
+{% endblock %}

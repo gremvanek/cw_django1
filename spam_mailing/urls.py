@@ -5,7 +5,6 @@ from spam_mailing.views import home_page, client_detail, client_create, client_u
     MessageUpdateView, MessageDeleteView, mailing_list
 
 urlpatterns = [
-    path("", home_page, name="home"),
 
     path("clients/", client_list, name="client_list"),
     path('client/<int:pk>/', client_detail, name='client_detail'),
