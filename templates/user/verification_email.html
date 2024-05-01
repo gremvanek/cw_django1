@@ -7,6 +7,6 @@
     <h1>Подтверждение почты</h1>
     <p>Привет, {{user.username}}!</p>
     <p>Перейдите по ссылке, чтобы подтвердить почту:</p>
-    <a href="{{ request.build_absolute_uri }}/verify-email/?code={{ verification_code }}">Подтверждение почты</a>
+    <a href="{{ request.build_absolute_uri }}/verify-email/?code={{ token }}">Подтверждение почты</a>
 </body>
 </html>

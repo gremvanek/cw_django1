@@ -11,6 +11,7 @@ from spam_mailing.models import Client, Mailing, Message
 #     """Отображение домашней страницы."""
 #     return render(request, 'index.html')
 
+
 @login_required
 def client_list(request):
     """Отображение списка клиентов."""
@@ -57,11 +58,18 @@ def client_delete(request, pk):
         return redirect('spam:client_list')
     return render(request, 'spam_mail/client_delete.html', {'client': client})
 
+
 @login_required
 def mailing_list(request):
     """Отображение списка рассылок."""
     mailings = Mailing.objects.all()
-    return render(request, 'spam_mail/mailing/mailing_list.html', {'mailings': mailings})
+    is_manager = request.user.groups.filter(name='Менеджеры').exists()
+
+    context = {
+        'mailings': mailings,
+        'is_manager': is_manager,
+    }
+    return render(request, 'spam_mail/mailing/mailing_list.html', context)
 
 
 class MailingCreateView(CreateView):
