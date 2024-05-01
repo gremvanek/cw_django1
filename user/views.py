@@ -5,15 +5,18 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
+from django.contrib.auth.views import PasswordResetConfirmView
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy, reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 from django.views import View
+from django.views.generic import FormView
 
 from .forms import UserRegistrationForm, UserForm
 from .models import User
@@ -161,37 +164,47 @@ def send_verification_email(email, token, username):
     send_mail(subject, message, from_email, [email])
 
 
-class CustomPasswordResetView(PasswordResetView):
+class CustomPasswordResetView(FormView):
+    template_name = 'user/password_reset_form.html'
+    success_url = reverse_lazy('password_reset_done')
+    form_class = PasswordResetForm
+
     def form_valid(self, form):
-        # Generate reset token and uid
         email = form.cleaned_data['email']
-        uidb64 = urlsafe_base64_encode(force_bytes(email))
-        token = self.token_generator.make_token(form.user)
-        reset_link = reverse_lazy('user:password_reset_confirm', kwargs={'uidb64': uidb64, 'token': token})
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.get(email=email)
+        except UserModel.DoesNotExist:
+            user = None
 
-        # Send reset link to user
-        send_mail(
-            _('Password reset'),
-            _('Please follow the link below to reset your password:') + '\n\n' + self.request.build_absolute_uri(
-                reset_link),
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False,
-        )
-
+        if user is not None:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            reset_link = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            send_mail(
+                _('Password reset'),
+                render_to_string('user/password_reset_email.html', {'reset_link': reset_link}),
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+            )
         return super().form_valid(form)
 
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
-    def get(self, request, uidb64=None, token=None, *args, **kwargs):
+    template_name = 'user/password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+    def get(self, request, *args, **kwargs):
+        uidb64 = kwargs['uidb64']
+        token = kwargs['token']
         UserModel = get_user_model()
         try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
+            uid = str(urlsafe_base64_decode(uidb64), 'utf-8')
             user = UserModel.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
             user = None
 
-        if user is not None and default_token_generator.check_token(user, token):
-            return super().get(request, uidb64=uidb64, token=token, *args, **kwargs)
-        else:
-            return redirect('user:password_reset')
+        if user is None or not default_token_generator.check_token(user, token):
+            return redirect('password_reset')
+        return super().get(request, *args, **kwargs)
