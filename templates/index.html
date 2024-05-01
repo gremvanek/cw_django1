@@ -40,19 +40,21 @@
                 <li class="nav-item">
                     {% else %}
                     {% endif %}
-                {% if user.is_authenticated %}
-                <a class="nav-link" href="{% url 'user:u_logout' %}">Выход</a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                <a class="nav-link" href="{% url 'user:u_login' %}">Вход</a>
-                <a class="nav-link" href="{% url 'user:u_register' %}">Регистрация</a>
-                </li>
-                {% endif %}
-                {% if user.have_permissions %}
+                    {% if user.is_authenticated and user.have_permissions %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'user:u_list' %}">Список пользователей</a>
                 </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                <a class="nav-link" href="{% url 'user:u_detail' pk=user.pk %}">Профиль</a>
+                </li>
+                <a class="nav-link" href="{% url 'user:u_logout' %}">Выход</a>
+                {% else %}
+                <li class="nav-item">
+                <a class="nav-link" href="{% url 'user:u_login' %}">Вход</a>
+                </li>
+                <a class="nav-link" href="{% url 'user:u_register' %}">Регистрация</a>
                 {% endif %}
             </ul>
         </div>

@@ -7,12 +7,14 @@
         <div style="text-align: center; color: rgba(0, 0, 0, 0.5);">
             <a href="{% url 'user:u_create' %}" class="btn btn-primary mt-2">Создать пользователя</a>
             <h2 class="mt-2">Список пользователей</h2>
-            <ul>
+            <ul style="list-style-type: none; padding: 0;">
                 {% for user in users %}
-                <li>
+                <li style="margin-bottom: 10px; padding: 1px; border: 1px solid #ccc; border-radius: 1px; background-color: rgba(255, 255, 255, 0.8);">
                     {{user.email}}
-                    <a href="{% url 'user:u_update' user.pk %}" class="btn btn-info btn-sm">Изменить</a>
-                    <a href="{% url 'user:u_detail' user.pk %}" class="btn btn-info btn-sm">Подробнее</a>
+                    <div style="margin-top: 1px;">
+                        <a href="{% url 'user:u_update' user.pk %}" class="btn btn-info btn-sm">Изменить</a>
+                        <a href="{% url 'user:u_detail' user.pk %}" class="btn btn-info btn-sm">Подробнее</a>
+                    </div>
                 </li>
                 {% endfor %}
             </ul>

@@ -1,9 +1,14 @@
 {% extends 'index.html' %}
 
 {% block content %}
-  <h2>Детали пользователя</h2>
-  <p>Email: {{ object.email }}</p>
-  <p>Телефон: {{ object.phone }}</p>
-  <p>Аватар: {{ object.avatar }}</p>
-  <p>Страна: {{ object.country }}</p>
+  <div style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
+    <h2>Детали пользователя</h2>
+    <p>Email: {{ user.email }}</p>
+    <p>Телефон: {{ user.phone }}</p>
+    <p>Аватар: {{ user.avatar }}</p>
+    <p>Страна: {{ user.country }}</p>
+    <p>Имя пользователя: {{ user.username }}</p>
+<!--    <p>Верификация: {{ user.is_verified }}</p>-->
+<!--    <p>Код верификации: {{ user.verification_code }}</p>-->
+<!--    <p>Права доступа: {{ user.have_permissions }}</p>   -->
 {% endblock %}

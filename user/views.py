@@ -5,7 +5,7 @@ import string
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetConfirmView
@@ -25,8 +25,11 @@ from .models import User
 
 # Список пользователей
 @login_required
+@permission_required('user.view_user', raise_exception=True)
 def user_list(request):
     users = User.objects.all()
+    success_url = reverse_lazy('user:u_list')
+    failure_url = reverse_lazy('user:u_login')
     return render(request, 'user/u_list.html', {'users': users})
 
 
@@ -45,7 +48,7 @@ def user_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Пользователь успешно создан.')
-            return redirect('user:user_list')
+            return redirect('user:u_list')
     else:
         form = UserForm()
     return render(request, 'user/u_form.html', {'form': form})
@@ -60,7 +63,7 @@ def user_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Пользователь успешно отредактирован.')
-            return redirect('user:user_list')
+            return redirect('user:u_list')
     else:
         form = UserForm(instance=user)
     return render(request, 'user/u_form.html', {'form': form})

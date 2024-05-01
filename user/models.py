@@ -1,3 +1,4 @@
+# user.models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -27,3 +28,6 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+
+    def has_group(self, group_name):
+        return self.groups.filter(name=group_name).exists()
