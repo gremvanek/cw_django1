@@ -1,3 +1,4 @@
+# spam_mailing.views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -19,12 +20,14 @@ def client_list(request):
     return render(request, 'spam_mail/client_list.html', {'clients': clients})
 
 
+@login_required
 def client_detail(request, pk):
     """Отображение деталей клиента."""
     client = Client.objects.get(pk=pk)
     return render(request, 'spam_mail/client_detail.html', {'client': client})
 
 
+@login_required
 def client_create(request):
     """Создание нового клиента."""
     if request.method == 'POST':
@@ -37,6 +40,7 @@ def client_create(request):
     return render(request, 'spam_mail/client_form.html', {'form': form})
 
 
+@login_required
 def client_update(request, pk):
     """Обновление информации о клиенте."""
     client = Client.objects.get(pk=pk)
@@ -50,6 +54,7 @@ def client_update(request, pk):
     return render(request, 'spam_mail/client_form.html', {'form': form})
 
 
+@login_required
 def client_delete(request, pk):
     """Удаление клиента."""
     client = Client.objects.get(pk=pk)
@@ -72,6 +77,7 @@ def mailing_list(request):
     return render(request, 'spam_mail/mailing/mailing_list.html', context)
 
 
+@login_required
 class MailingCreateView(CreateView):
     """Создание новой рассылки."""
     model = Mailing
@@ -80,6 +86,7 @@ class MailingCreateView(CreateView):
     success_url = reverse_lazy('spam:mailing_list')
 
 
+@login_required
 class MailingUpdateView(UpdateView):
     """Обновление информации о рассылке."""
     model = Mailing
@@ -88,6 +95,7 @@ class MailingUpdateView(UpdateView):
     success_url = reverse_lazy('spam:mailing_list')
 
 
+@login_required
 class MailingDeleteView(DeleteView):
     """Удаление рассылки."""
     model = Mailing
@@ -101,6 +109,7 @@ def message_list(request):
     return render(request, 'spam_mail/message/message_list.html', {'messages': messages})
 
 
+@login_required
 class MessageCreateView(CreateView):
     """Создание нового сообщения."""
     model = Message
@@ -109,6 +118,7 @@ class MessageCreateView(CreateView):
     success_url = reverse_lazy('spam:message_list')
 
 
+@login_required
 class MessageUpdateView(UpdateView):
     """Обновление информации о сообщении."""
     model = Message
@@ -117,6 +127,7 @@ class MessageUpdateView(UpdateView):
     success_url = reverse_lazy('spam:message_list')
 
 
+@login_required
 class MessageDeleteView(DeleteView):
     """Удаление сообщения."""
     model = Message

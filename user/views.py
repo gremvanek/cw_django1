@@ -1,3 +1,4 @@
+# user.views
 import secrets
 import string
 
@@ -30,12 +31,14 @@ def user_list(request):
 
 
 # Детали пользователя
+@login_required
 def user_detail(request, pk):
     user = User.objects.get(pk=pk)
     return render(request, 'user/u_detail.html', {'user': user})
 
 
 # Создание пользователя
+@login_required
 def user_create(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -49,6 +52,7 @@ def user_create(request):
 
 
 # Редактирование пользователя
+@login_required
 def user_update(request, pk):
     user = get_object_or_404(User, pk=pk)
     if request.method == 'POST':
@@ -63,6 +67,7 @@ def user_update(request, pk):
 
 
 # Удаление пользователя
+@login_required
 def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
     user.delete()
