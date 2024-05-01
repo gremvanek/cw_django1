@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -5,12 +6,12 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from spam_mailing.forms import ClientForm, MailingForm, MessageForm
 from spam_mailing.models import Client, Mailing, Message
 
+#
+# def home_page(request):
+#     """Отображение домашней страницы."""
+#     return render(request, 'index.html')
 
-def home_page(request):
-    """Отображение домашней страницы."""
-    return render(request, 'index.html')
-
-
+@login_required
 def client_list(request):
     """Отображение списка клиентов."""
     clients = Client.objects.all()
@@ -56,7 +57,7 @@ def client_delete(request, pk):
         return redirect('spam:client_list')
     return render(request, 'spam_mail/client_delete.html', {'client': client})
 
-
+@login_required
 def mailing_list(request):
     """Отображение списка рассылок."""
     mailings = Mailing.objects.all()
@@ -85,6 +86,7 @@ class MailingDeleteView(DeleteView):
     success_url = reverse_lazy('spam:mailing_list')
 
 
+@login_required
 def message_list(request):
     """Отображение списка сообщений."""
     messages = Message.objects.all()

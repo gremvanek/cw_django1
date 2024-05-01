@@ -9,21 +9,16 @@
         margin: 5px;
     }
 </style>
+{% if user.is_authenticated %}
+{% else %}
 <form method="post" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
-    {% csrf_token %}
-    {% for message in messages %}
-        <div>{{ message }}</div>
-    {% endfor %}
-    <div class="small-margin">
-        <label for="email">Email:</label>
-    </div>
-    <input type="email" id="email" name="email" required><br>
-    <div class="small-margin">
-        <label for="password">Пароль:</label>
-    </div>
-    <input type="password" id="password" name="password" required><br>
     <div class="mid-margin">
-        <button type="submit">Вход</button>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Войти</button>
+        </form>
     </div>
 </form>
+{% endif %}
 {% endblock %}

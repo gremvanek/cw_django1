@@ -1,6 +1,6 @@
 from django.urls import path
 
-from spam_mailing.views import home_page, client_detail, client_create, client_update, client_delete, client_list, \
+from spam_mailing.views import client_detail, client_create, client_update, client_delete, client_list, \
     MailingCreateView, MailingUpdateView, MailingDeleteView, message_list, MessageCreateView, \
     MessageUpdateView, MessageDeleteView, mailing_list
 

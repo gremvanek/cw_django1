@@ -10,11 +10,12 @@ from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 
-from .forms import UserLoginForm, UserRegistrationForm, UserForm
+from .forms import UserRegistrationForm, UserForm
 from .models import User
 
 
 # Список пользователей
+@login_required
 def user_list(request):
     users = User.objects.all()
     return render(request, 'user/u_list.html', {'users': users})
@@ -77,29 +78,29 @@ class VerifyEmailView(View):
             return render(request, 'user/verification_error.html', {'verification_code': verification_code})
 
 
-# Вход пользователя
-class UserLoginView(View):
-    @staticmethod
-    def get(request):
-        form = UserLoginForm()
-        return render(request, 'user/u_login.html', {'form': form})
-
-    @staticmethod
-    def post(request):
-        form = UserLoginForm(request.POST)
-        password = request.POST.get('password')  # Получаем пароль до проверки на валидность
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            try:
-                user = User.objects.get(email=email)
-                if check_password(password, user.password):
-                    login(request, user)
-                    messages.success(request, 'Вы успешно вошли.')
-                    return redirect('spam_mailing:client_list')
-            except User.DoesNotExist:
-                pass
-        messages.error(request, 'Неправильный email или пароль.')
-        return render(request, 'user/u_login.html', {'form': form})
+# # Вход пользователя
+# class UserLoginView(View):
+#     @staticmethod
+#     def get(request):
+#         form = UserLoginForm()
+#         return render(request, 'user/u_login.html', {'form': form})
+#
+#     @staticmethod
+#     def post(request):
+#         form = UserLoginForm(request.POST)
+#         password = request.POST.get('password')  # Получаем пароль до проверки на валидность
+#         if form.is_valid():
+#             email = form.cleaned_data['email']
+#             try:
+#                 user = User.objects.get(email=email)
+#                 if check_password(password, user.password):
+#                     login(request, user)
+#                     messages.success(request, 'Вы успешно вошли.')
+#                     return redirect('spam_mailing:client_list')
+#             except User.DoesNotExist:
+#                 pass
+#         messages.error(request, 'Неправильный email или пароль.')
+#         return render(request, 'user/u_login.html', {'form': form})
 
 
 # Выход пользователя
