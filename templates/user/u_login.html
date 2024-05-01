@@ -1,3 +1,4 @@
+<!--U_login.html-->
 {% extends 'index.html' %}
 
 {% block content %}
@@ -12,11 +13,21 @@
 {% if user.is_authenticated %}
 {% else %}
 <form method="post" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
+    {% if messages %}
+    <div class="mid-margin">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="mid-margin">
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Войти</button>
+            <button class="btn btn-primary" type="submit">Войти</button>
+            <a href="{% url 'user:password_reset' %}" class="btn btn-danger">Сброс пароля</a>
         </form>
     </div>
 </form>
