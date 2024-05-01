@@ -9,6 +9,15 @@
         margin: 5px;
     }
 </style>
+{% block messages %}
+{% if messages %}
+<div style="max-width: 400px; margin: 0 auto;">
+    {% for message in messages %}
+    <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
 {% if user.is_authenticated %}
 {% else %}
 <form method="post" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
@@ -16,7 +25,8 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Войти</button>
+            <button class="btn btn-primary" type="submit">Войти</button>
+            <a class="btn btn-danger" href="{% url 'user:u_reset' %}">Сброс пароля</a>
         </form>
     </div>
 </form>

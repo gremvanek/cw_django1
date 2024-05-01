@@ -3,13 +3,21 @@ import string
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.views import PasswordResetConfirmView
 from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.views import View
+from django.views.generic import FormView
 
+from new.settings import EMAIL_HOST_USER
 from .forms import UserRegistrationForm, UserForm
 from .models import User
 
@@ -117,11 +125,13 @@ def generate_verification_code(length=6):
 
 
 class UserRegisterView(View):
-    def get(self, request):
+    @staticmethod
+    def get(request):
         form = UserRegistrationForm()
         return render(request, 'user/u_register.html', {'form': form})
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
@@ -154,3 +164,49 @@ def send_verification_email(email, verification_code, username):
               f'Ваша команда'
     from_email = settings.EMAIL_HOST_USER
     send_mail(subject, message, from_email, [email])
+
+
+class ResetPasswordView(FormView):
+    form_class = PasswordResetForm
+    template_name = 'user/change_password.html'
+    success_url = reverse_lazy('user:u_login')
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(self.request, 'Пользователь с таким email не найден.')
+            return redirect('user:u_login')
+
+        new_password = User.objects.make_random_password()
+        user.set_password(new_password)
+        user.save()
+
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        reset_password_link = f'http://{self.request.get_host()}/reset_password/{uid}/{token}/'
+        send_mail(
+            'Сброс пароля',
+            f'Ваш новый пароль: {new_password}. Или перейдите по ссылке для установки нового пароля: {reset_password_link}',
+            EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
+
+        messages.success(self.request, 'На ваш email отправлено письмо с инструкциями по сбросу пароля.')
+        return super().form_valid(form)
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'user/change_password.html'
+    success_url = reverse_lazy('user:u_login')
+
+    def form_valid(self, form):
+        user = form.save()
+        messages.success(self.request, 'Пароль успешно изменен. Войдите с новым паролем.')
+        return redirect(self.success_url)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Ссылка для сброса пароля недействительна.')
+        return super().form_invalid(form)

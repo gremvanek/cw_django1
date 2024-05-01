@@ -27,6 +27,11 @@ class Client(models.Model):
 
 
 class Mailing(models.Model):
+    class Meta:
+        permissions = [
+            ("disable_mailing", "Can disable mailing"),
+        ]
+
     client = models.ManyToManyField(Client, verbose_name="Клиенты")
     send_time = models.DateTimeField(default=timezone.now, verbose_name="Время отправки")
     frequency_choices = [
@@ -40,6 +45,7 @@ class Mailing(models.Model):
         ('created', 'Создана'),
         ('started', 'Запущена'),
         ('completed', 'Завершена'),
+        ('stopped', 'Остановлена')
     ]
     status = models.CharField(max_length=10, choices=status_choices, verbose_name="Статус")
 
