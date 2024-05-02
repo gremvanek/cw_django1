@@ -25,6 +25,7 @@ class User(AbstractUser):
     verification_code = models.CharField(max_length=100, verbose_name='Код верификации', **NULLABLE)
 
     have_permissions = models.BooleanField(default=False, verbose_name='Права доступа')
+    is_blocked = models.BooleanField(default=False, verbose_name="Заблокирован")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

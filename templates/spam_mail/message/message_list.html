@@ -3,12 +3,15 @@
 {% block content %}
   <div class="client-list" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8);">
     <div style="text-align: center; color: rgba(0, 0, 0, 0.5);">
+      {% if user.is_authenticated and 'Manager' not in groups %}
       <a href="{% url 'spam_mailing:message_create' %}" class="btn btn-primary mt-2">Создать сообщение</a>
+      {% endif %}
       <h2 class="mt-2">Список сообщений</h2>
       <ul>
         {% for message in messages %}
+        {% if message.owner == request.user or user.is_superuser or 'Manager' in groups %}
           <li style="mk max-width: 100px; margin: auto; padding: 5px; border: 10px solid #ccc; border-radius: 10px; background-color: rgba(255, 255, 255, 0.8);">
-            <strong>{{ message.mailing }}</strong>
+            <strong>{{ message.subject }}</strong>
             <a href="{% url 'spam_mailing:message_update' message.pk %}" class="btn btn-info btn-sm">Изменить</a>
             <form method="post" action="{% url 'spam_mailing:message_delete' message.pk %}" style="display: inline;" onsubmit="return confirm('Вы уверены, что хотите удалить клиента?');">
               {% csrf_token %}
@@ -16,6 +19,7 @@
               <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
             </form>
           </li>
+        {% endif %}
         {% endfor %}
       </ul>
     </div>

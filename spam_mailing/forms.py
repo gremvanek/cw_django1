@@ -4,6 +4,12 @@ from .models import Client, Mailing, Message
 
 
 class ClientForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(ClientForm, self).__init__(*args, **kwargs)
+        if user:
+            self.instance.owner = user
+
     class Meta:
         model = Client
         fields = ['email', 'last_name', 'first_name', 'middle_name', 'comment']
@@ -20,6 +26,11 @@ class ClientForm(forms.ModelForm):
 
 
 class MailingForm(forms.ModelForm):
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not user.is_superuser:
+            self.fields.pop('status', None)  # удаляем поле status для обычных пользователей
+
     class Meta:
         model = Mailing
         fields = ['client', 'send_time', 'frequency', 'status']
@@ -38,6 +49,12 @@ class MailingForm(forms.ModelForm):
 
 
 class MessageForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(MessageForm, self).__init__(*args, **kwargs)
+        if user:
+            self.instance.owner = user
+
     class Meta:
         model = Message
         fields = ['mailing', 'subject', 'body']

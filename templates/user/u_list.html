@@ -10,12 +10,14 @@
             <ul style="list-style-type: none; padding: 0;">
                 {% for user in users %}
                 <li style="margin-bottom: 10px; padding: 1px; border: 1px solid #ccc; border-radius: 1px; background-color: rgba(255, 255, 255, 0.8);">
-                    {{user.email}}
+                    <li>{{user.email}}
                     <div style="margin-top: 1px;">
+                        {% if request.user.is_superuser %}
                         <a href="{% url 'user:u_update' user.pk %}" class="btn btn-info btn-sm">Изменить</a>
                         <a href="{% url 'user:u_detail' user.pk %}" class="btn btn-info btn-sm">Подробнее</a>
+                        {% endif %}
+                        {% if 'Manager' is groups %}
                     </div>
-                </li>
                 {% endfor %}
             </ul>
         </div>

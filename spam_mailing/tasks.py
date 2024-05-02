@@ -66,7 +66,7 @@ def send_emails(mailing_id):
     # Get the message associated with the mailing
     message = mailing.message
 
-    for client in mailing.client.all():
+    for client in mailing.client.filter(is_active=True):
         email_message = MIMEMultipart()
         email_message['From'] = config('EMAIL_HOST_USER')
         email_message['To'] = client.email

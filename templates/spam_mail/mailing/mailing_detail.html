@@ -1,9 +1,21 @@
-<!-- templates/spam_mail/mailing/mailing_detail.html -->
 {% extends 'index.html' %}
 
 {% block content %}
-  <div style="text-align: center; color: rgba(0, 0, 0, 0.5);">
-    <h2>{{ object.title }}</h2>
-    <p>{{ object.description }}</p>
+<li style="mk max-width: 100px; margin: auto; padding: 5px; border: 10px solid #ccc; border-radius: 10px; background-color: rgba(255, 255, 255, 0.8);">
+  <div class="mailing-detail">
+    <h2>Подробная информация о рассылке</h2>
+    <ul>
+      <li><strong>Владелец:</strong> {{ object.owner }}</li>
+      <li><strong>Время отправки:</strong> {{ object.send_time }}</li>
+      <li><strong>Рассылка:</strong> {{ object.frequency }}</li>
+      <li><strong>Статус:</strong> {{ object.status }}</li>
+    </ul>
+    {% if user.is_authenticated and 'Manager' in groups %}
+    <form method="post" action="{% url 'spam_mailing:mailing_stop' object.pk %}" style="display: inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-warning btn-sm">Остановить</button>
+    </form>
+    {% endif %}
   </div>
+</li>
 {% endblock %}

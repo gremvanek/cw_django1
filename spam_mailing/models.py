@@ -13,6 +13,7 @@ class Client(models.Model):
     first_name = models.CharField(max_length=50, verbose_name="Имя")
     middle_name = models.CharField(max_length=50, verbose_name="Отчество", blank=True, null=True)
     comment = models.TextField(verbose_name="Комментарий", blank=True, null=True)
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
 
     def __str__(self):
         return f"{self.first_name}, {self.last_name}, {self.middle_name}"
@@ -52,10 +53,15 @@ class Mailing(models.Model):
         ('completed', 'Завершена'),
         ('stopped', 'Остановлена')
     ]
+
     status = models.CharField(max_length=10, choices=status_choices, verbose_name="Статус")
 
     def __str__(self):
         return f"Рассылка № {self.pk}"
+
+    def stop_mailing(self):
+        self.status = 'stopped'
+        self.save()
 
 
 class Message(models.Model):

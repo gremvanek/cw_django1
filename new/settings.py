@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import dj_database_url
-from celery.schedules import crontab
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -56,6 +55,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "spam_mailing.context_processors.user_groups_processor",
             ],
         },
     },
