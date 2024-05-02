@@ -108,6 +108,11 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     template_name = 'spam_mail/mailing/mailing_form.html'
     success_url = reverse_lazy('spam:mailing_list')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)
@@ -122,13 +127,12 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user  # Передаем текущего пользователя в форму
+        kwargs['request'] = self.request
         return kwargs
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.user = self.request.user  # Передаем текущего пользователя в форму через атрибут
-        return form
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
 
 class MailingDeleteView(LoginRequiredMixin, DeleteView):

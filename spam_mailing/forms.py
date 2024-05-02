@@ -1,5 +1,6 @@
 from django import forms
 
+
 from .models import Client, Mailing, Message
 
 
@@ -26,10 +27,14 @@ class ClientForm(forms.ModelForm):
 
 
 class MailingForm(forms.ModelForm):
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        user = None
+        if self.request:
+            user = self.request.user
         super().__init__(*args, **kwargs)
-        if not user.is_superuser:
-            self.fields.pop('status', None)  # удаляем поле status для обычных пользователей
+        if user and not user.is_superuser:
+            self.fields.pop('status', None)  # Remove the status field for regular users
 
     class Meta:
         model = Mailing
