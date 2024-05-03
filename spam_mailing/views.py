@@ -82,6 +82,7 @@ class ClientInactiveView(View):
         client.inactive()
         return redirect('spam_mailing:client_list')
 
+
 @login_required
 def mailing_list(request):
     """Отображение списка рассылок."""

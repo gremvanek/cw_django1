@@ -1,4 +1,3 @@
-from apscheduler.schedulers.background import BackgroundScheduler
 from django.core.management import BaseCommand
 from spam_mailing.tasks import start_scheduler
 

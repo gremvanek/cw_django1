@@ -10,7 +10,6 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetConfirmView
 from django.core.mail import send_mail
-from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
@@ -28,8 +27,6 @@ from .models import User
 @permission_required('user.view_user', raise_exception=True)
 def user_list(request):
     users = User.objects.all()
-    success_url = reverse_lazy('user:u_list')
-    failure_url = reverse_lazy('user:u_login')
     return render(request, 'user/u_list.html', {'users': users})
 
 
@@ -196,7 +193,8 @@ class ResetPasswordView(FormView):
         reset_password_link = f'http://{self.request.get_host()}/reset_password/{uid}/{token}/'
         send_mail(
             'Сброс пароля',
-            f'Ваш новый пароль: {new_password}. Или перейдите по ссылке для установки нового пароля: {reset_password_link}',
+            f'Ваш новый пароль: {new_password}. Или перейдите по ссылке для установки '
+            f'нового пароля: {reset_password_link}',
             EMAIL_HOST_USER,
             [email],
             fail_silently=False,
@@ -211,7 +209,6 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     success_url = reverse_lazy('user:u_login')
 
     def form_valid(self, form):
-        user = form.save()
         messages.success(self.request, 'Пароль успешно изменен. Войдите с новым паролем.')
         return redirect(self.success_url)
 

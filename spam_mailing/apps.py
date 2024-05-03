@@ -16,4 +16,3 @@ class SpamMailingConfig(AppConfig):
             if mailing.id not in schedulers:
                 start_scheduler(mailing.id)
             time.sleep(3)  # Для демонстрации, чтобы не было слишком быстро
-

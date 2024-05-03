@@ -6,7 +6,8 @@ from .models import User
 
 
 class UserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(label='Пароль', strip=False, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(label='Пароль', strip=False,
+                               widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password1 = forms.CharField(label='Подтверждение пароля', strip=False,
                                 widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
