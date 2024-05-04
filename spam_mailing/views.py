@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 
 from spam_mailing.forms import ClientForm, MailingForm, MessageForm

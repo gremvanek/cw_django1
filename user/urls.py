@@ -1,6 +1,8 @@
 # user.urls
 from django.contrib.auth.views import LoginView
 from django.urls import path
+from django.views.decorators.cache import cache_page
+
 from user.views import (user_create, user_update, user_delete, VerifyEmailView, user_logout,
                         UserRegisterView, user_list, user_detail, ResetPasswordView, CustomPasswordResetConfirmView, )
 
@@ -19,3 +21,6 @@ urlpatterns = [
     path('password_reset/', ResetPasswordView.as_view(), name='u_reset'),
     path('reset_password/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 ]
+
+# Применяем кэширование к главной странице на 1 минуту
+urlpatterns[5] = path('', cache_page(60 * 1)(LoginView.as_view(template_name='user/u_login.html')), name='u_login')

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.cache.UpdateCacheMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -41,6 +42,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = "new.urls"
@@ -143,12 +145,6 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25
 # Настройки кеша
 CACHE_ENABLED = True
 if CACHE_ENABLED:
-    CACHES = {
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': config('REDIS_URL', default='redis://localhost:6379/0'),
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            }
-        }
-    }
+    CACHE_MIDDLEWARE_ALIAS = 'default'
+    CACHE_MIDDLEWARE_SECONDS = 60 * 1  # Время жизни кэша в секундах (здесь 1 минута)
+    CACHE_MIDDLEWARE_KEY_PREFIX = 'new_site_cache'
