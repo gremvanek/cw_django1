@@ -1,5 +1,6 @@
 # user.urls
 from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect
 from django.urls import path
 from django.views.decorators.cache import cache_page
 
@@ -15,7 +16,7 @@ urlpatterns = [
     path('user/<int:pk>/update/', user_update, name='u_update'),
     path('user/<int:pk>/delete/', user_delete, name='u_delete'),
     path('verify-email/', VerifyEmailView.as_view(), name='verify_email'),
-    path('', cache_page(60 * 1)(LoginView.as_view(template_name='user/u_login.html')), name='u_login'),
+    path('login/', cache_page(60 * 1)(LoginView.as_view(template_name='user/u_login.html')), name='u_login'),
     path('logout/', user_logout, name='u_logout'),
     path('register/', UserRegisterView.as_view(), name='u_register'),
     path('password_reset/', ResetPasswordView.as_view(), name='u_reset'),
