@@ -129,17 +129,18 @@ EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_USE_TSL = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-# # Настройки Celery
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-# # Настройки для Celery beat
-# CELERY_BEAT_SCHEDULE = {
-#     'daily_mailing_task': {
-#         'task': 'spam_mailing.tasks.send_emails',
-#         'schedule': crontab(hour=0, minute=0),
-#     },
-# }
-# Настройки кеша
+
+APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'
+
+# Максимальное время выполнения, разрешенное для заданий, которые запускаются вручную через сайт администрирования
+# Django, что
+# предотвращает истечение времени ожидания HTTP-запросов сайта администрирования.
+#
+# Более длительные задания, вероятно, следует передать в библиотеку обработки фоновых задач,
+# которая вместо этого поддерживает несколько фоновых рабочих процессов (например, Dramatiq, Celery, Django-RQ,
+# и т. д. См.: https://djangopackages.org/grids/g /workers-queues-tasks/ для популярных вариантов).
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # секунд
+
 CACHE_ENABLED = True
 if CACHE_ENABLED:
     CACHES = {

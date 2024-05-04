@@ -1,0 +1,35 @@
+[
+{
+  "model": "blog.blog",
+  "pk": 1,
+  "fields": {
+    "title": "NFT Кот побил все рекорды!",
+    "body": "Продажи NFT Кота побили все немыслимые преелы!",
+    "preview": "blogs/blackcatzoningout_meme.jpg",
+    "date_is_published": "2024-05-04",
+    "views_count": 0
+  }
+},
+{
+  "model": "blog.blog",
+  "pk": 2,
+  "fields": {
+    "title": "Слезы студентов по Джанго падают в цене!",
+    "body": "Уже не так обильно льются слезы. Но и спрос также уменьшился.",
+    "preview": "blogs/6znoUuOJe4y4y_Kw9ItccE4N13c-960.jpg",
+    "date_is_published": "2024-05-04",
+    "views_count": 0
+  }
+},
+{
+  "model": "blog.blog",
+  "pk": 3,
+  "fields": {
+    "title": "Слаанеш снова в деле!",
+    "body": "Его влияние распространяется все дальше! Следите за новостями! Не пропустите ничего!",
+    "preview": "blogs/Без_названия.jpg",
+    "date_is_published": "2024-05-04",
+    "views_count": 0
+  }
+}
+]
