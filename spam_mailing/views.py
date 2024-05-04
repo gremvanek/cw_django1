@@ -1,19 +1,13 @@
-# spam_mailing.views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView
 
 from spam_mailing.forms import ClientForm, MailingForm, MessageForm
 from spam_mailing.models import Client, Mailing, Message
-
-
-#
-# def home_page(request):
-#     """Отображение домашней страницы."""
-#     return render(request, 'index.html')
 
 
 @login_required
@@ -70,17 +64,19 @@ def client_delete(request, pk):
 
 
 class ClientMakeActiveView(View):
-    def post(self, request, pk):
+    @staticmethod
+    def post(request, pk):
         client = get_object_or_404(Client, pk=pk)
         client.make_active()
-        return redirect('spam_mailing:client_list')
+        return redirect('spam:client_list')
 
 
 class ClientInactiveView(View):
-    def post(self, request, pk):
+    @staticmethod
+    def post(request, pk):
         client = get_object_or_404(Client, pk=pk)
         client.inactive()
-        return redirect('spam_mailing:client_list')
+        return redirect('spam:client_list')
 
 
 @login_required
@@ -109,13 +105,24 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     template_name = 'spam_mail/mailing/mailing_form.html'
     success_url = reverse_lazy('spam:mailing_list')
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
     def form_valid(self, form):
-        form.instance.owner = self.request.user
+        # Получаем данные из формы
+        name = form.cleaned_data['name']
+        clients = form.cleaned_data['clients']
+        period = form.cleaned_data['period']
+
+        # Создаем объект Message
+        message = Message.objects.create(subject="Тема письма", body="Содержание письма", owner=self.request.user)
+
+        # Создаем объект Mailing
+        mailing = form.save(commit=False)
+        mailing.owner = self.request.user
+        mailing.message = message
+        mailing.save()
+
+        # Присваиваем клиентов к рассылке
+        mailing.clients.set(clients)
+
         return super().form_valid(form)
 
 
@@ -144,10 +151,11 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
 
 class MailingStopView(View):
 
-    def post(self, request, pk):
+    @staticmethod
+    def post(request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
         mailing.stop_mailing()
-        return redirect('spam_mailing:mailing_list')
+        return redirect('spam:mailing_list')
 
 
 @login_required

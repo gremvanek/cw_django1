@@ -38,18 +38,22 @@ class MailingForm(forms.ModelForm):
 
     class Meta:
         model = Mailing
-        fields = ['client', 'send_time', 'frequency', 'status']
+        fields = ['name', 'clients', 'start_time', 'period', 'status']
         labels = {
-            'client': 'Клиенты',
-            'send_time': 'Время отправки',
-            'frequency': 'Рассылка',
+            'name': 'Название рассылки',
+            'clients': 'Клиенты',
+            'start_time': 'Время отправки',
+            'period': 'Рассылка',
             'status': 'Статус',
+            'message': 'Сообщение',
         }
         widgets = {
-            'client': forms.SelectMultiple(attrs={'class': 'form-control'}),
-            'send_time': forms.DateTimeInput(attrs={'class': 'form-control'}),
-            'frequency': forms.Select(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'clients': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'start_time': forms.TimeInput(attrs={'class': 'form-control'}),
+            'period': forms.Select(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-control'}),
+            'message': forms.Select(attrs={'class': 'form-control'}),
         }
 
 
@@ -57,19 +61,17 @@ class MessageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(MessageForm, self).__init__(*args, **kwargs)
-        if user:
+        if user and self.instance:
             self.instance.owner = user
 
     class Meta:
         model = Message
-        fields = ['mailing', 'subject', 'body']
+        fields = ['subject', 'body']
         labels = {
-            'mailing': 'Рассылка',
             'subject': 'Тема письма',
             'body': 'Содержание письма',
         }
         widgets = {
-            'mailing': forms.Select(attrs={'class': 'form-control'}),
             'subject': forms.TextInput(attrs={'class': 'form-control'}),
             'body': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
