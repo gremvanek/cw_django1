@@ -2,6 +2,7 @@
 from django.db import models
 from django.utils import timezone
 
+from new import settings
 from user.models import User
 
 
@@ -31,48 +32,65 @@ class Client(models.Model):
         self.save()
 
 
-class Mailing(models.Model):
-    class Meta:
-        permissions = [
-            ("disable_mailing", "Can disable mailing"),
-        ]
-
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Владелец", default=None)
-    client = models.ManyToManyField(Client, verbose_name="Клиенты")
-    send_time = models.DateTimeField(default=timezone.now, verbose_name="Время отправки")
-    frequency_choices = [
-        ('daily', 'Раз в день'),
-        ('weekly', 'Раз в неделю'),
-        ('monthly', 'Раз в месяц'),
-    ]
-    frequency = models.CharField(max_length=10, choices=frequency_choices, verbose_name="Рассылка")
-
-    status_choices = [
-        ('created', 'Создана'),
-        ('started', 'Запущена'),
-        ('completed', 'Завершена'),
-        ('stopped', 'Остановлена')
-    ]
-
-    status = models.CharField(max_length=10, choices=status_choices, verbose_name="Статус")
-
-    def __str__(self):
-        return f"Рассылка № {self.pk}"
-
-    def stop_mailing(self):
-        self.status = 'stopped'
-        self.save()
-
-
 class Message(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Владелец", default=None)
-    mailing = models.OneToOneField(Mailing, on_delete=models.CASCADE, verbose_name="Рассылка", related_name="message")
     subject = models.CharField(max_length=255, verbose_name="Тема письма")
     body = models.TextField(verbose_name="Содержание письма")
 
 
+class Mailing(models.Model):
+    objects = models.Manager()
+
+    PERIOD_CHOICES = [
+        ('раз в день', 'раз в день'),
+        ('раз в неделю', 'раз в неделю'),
+        ('раз в месяц', 'раз в месяц'),
+    ]
+    STATUS_CHOICES = [
+        ('создана', 'создана'),
+        ('завершена', 'завершена'),
+        ('запущена', 'запущена'),
+    ]
+    name = models.CharField(max_length=100, verbose_name='Название рассылки', default='Рассылка')
+    clients = models.ManyToManyField(Client, verbose_name='Кому (клиенты сервиса)')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name="Сообщение")
+    date_start = models.DateField(verbose_name='Дата начала рассылки', default=timezone.now)
+    date_next = models.DateTimeField(verbose_name="следующая дата рассылки", default=timezone.now)
+    date_end = models.DateField(verbose_name='Дата окончания рассылки', default=timezone.now)
+    start_time = models.TimeField(verbose_name='Время рассылки', default=timezone.now)
+    period = models.CharField(max_length=30, choices=PERIOD_CHOICES, verbose_name='Периодичность рассылки',
+                              default='раз в день')
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, verbose_name='Статус рассылки',
+                              default='создана')
+    is_active = models.BooleanField(default=True, verbose_name='Активация рассылки')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+                              verbose_name='автор')
+
+    def __str__(self):
+        return f'{self.name}: Дата начала: {self.date_start}, Дата окончания: {self.date_end}. Статус: {self.status}'
+
+    class Meta:
+        verbose_name = 'Рассылка'
+        verbose_name_plural = 'Рассылки'
+        permissions = [
+            ("set_is_active", "Активация рассылки")
+        ]
+
+    def stop_mailing(self):
+        self.status = 'завершена'
+        self.save()
+
+
 class MailingLog(models.Model):
-    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name="Рассылка", related_name="logs")
-    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время последней попытки")
-    status = models.CharField(max_length=10, verbose_name="Статус попытки")
-    server_response = models.TextField(verbose_name="Ответ почтового сервера")
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name='Рассылка')
+    last_time_mail = models.DateTimeField(auto_now=True, verbose_name='дата и время последней попытки')
+    status = models.CharField(max_length=50, verbose_name='Статус попытки')
+    response = models.TextField(verbose_name='Ответ сервера', null=True, blank=True)
+
+    def __str__(self):
+        return (f'Дата и время последней попытки: {self.last_time_mail}.'
+                f' Статус попытки:{self.status}')
+
+    class Meta:
+        verbose_name = 'Лог'
+        verbose_name_plural = 'Логи'

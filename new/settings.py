@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_apscheduler",
     "spam_mailing",
     "user"
 ]
@@ -138,6 +139,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 #         'schedule': crontab(hour=0, minute=0),
 #     },
 # }
+APSCHEDULER_RUN_NOW_TIMEOUT = 25
 # Настройки кеша
 CACHE_ENABLED = True
 if CACHE_ENABLED:

@@ -12,9 +12,10 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
-    list_display = ('send_time', 'frequency', 'status', 'owner')
-    search_fields = ('send_time', 'frequency', 'status')
+    list_display = ('date_start', 'period', 'status', 'owner')
+    search_fields = ('date_start', 'period', 'status')
     list_filter = ('owner',)
+    readonly_fields = ('owner',)
 
 
 @admin.register(Message)
@@ -26,5 +27,5 @@ class MessageAdmin(admin.ModelAdmin):
 
 @admin.register(MailingLog)
 class MailingLogAdmin(admin.ModelAdmin):
-    list_display = ('mailing', 'timestamp', 'status', 'server_response')
-    search_fields = ('mailing', 'timestamp', 'status', 'server_response')
+    list_display = ('mailing', 'last_time_mail', 'status', 'response')
+    search_fields = ('mailing', 'last_time_mail', 'status', 'response')
