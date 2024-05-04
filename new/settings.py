@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "spam_mailing",
-    "user"
+    "user",
+    "blog",
 ]
 
 MIDDLEWARE = [
