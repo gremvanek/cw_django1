@@ -1,26 +1,26 @@
 # user.forms
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
+from django.forms import BooleanField
 
 from .models import User
 
 
-class UserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(label='Пароль', strip=False,
-                               widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-    password1 = forms.CharField(label='Подтверждение пароля', strip=False,
-                                widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+class StyleFormMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if isinstance(field, BooleanField):
+                field.widget.attrs["class"] = "form-check-input"
+            else:
+                field.widget.attrs["class"] = "form-control"
 
+
+class UserRegisterForm(StyleFormMixin, UserCreationForm):
     class Meta:
         model = User
-        fields = ['email', 'username', 'phone', 'avatar', 'country']
-
-    def clean_password1(self):
-        password = self.cleaned_data.get('password')
-        password1 = self.cleaned_data.get('password1')
-        if password and password1 and password != password1:
-            raise forms.ValidationError('Пароли не совпадают.')
-        return password1
+        fields = ('email', 'password1', 'password2')
 
 
 class UserForm(forms.ModelForm):

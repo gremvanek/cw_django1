@@ -53,7 +53,7 @@ class Mailing(models.Model):
     ]
     name = models.CharField(max_length=100, verbose_name='Название рассылки', default='Рассылка')
     clients = models.ManyToManyField(Client, verbose_name='Кому (клиенты сервиса)')
-    message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name="Сообщение")
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name="Сообщение", blank=True, null=True)
     date_start = models.DateField(verbose_name='Дата начала рассылки', default=timezone.now)
     date_next = models.DateTimeField(verbose_name="следующая дата рассылки", default=timezone.now)
     date_end = models.DateField(verbose_name='Дата окончания рассылки', default=timezone.now)
