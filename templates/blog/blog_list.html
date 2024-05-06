@@ -3,6 +3,9 @@
 
 <li style="mk max-width: 100px; margin: auto; padding: 5px; border: 10px solid #ccc; border-radius: 10px; background-color: rgba(255, 255, 255, 0.8);">
 <div class="row">
+    {% if user.is_authenticated and user.is_superuser %}
+      <a href="{% url 'blog:create' %}" class="btn btn-primary">Создать блог</a>
+      {% endif %}
     {% for object in object_list %}
     <div class="col-lg-4">
         <h2> {{object|title}}</h2>

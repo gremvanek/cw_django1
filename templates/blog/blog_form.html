@@ -1,0 +1,35 @@
+{% extends 'index.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if form.instance.pk %}Обновить блог{% else %}Создать блог{% endif %}</title>
+    <style>
+        body {
+            text-align: center; /* Центрируем текст внутри body */
+        }
+        h1 {
+            margin-top: 10px; /* Добавляем отступ сверху для заголовка */
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <h1>{% if form.instance.pk %}Обновить блог{% else %}Создать блог{% endif %}</h1>
+    <form method="post" style="max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: rgba(255, 255, 255, 0.8); enctype=multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% if form.instance.pk %}Обновить{% else %}Создать{% endif %}</button>
+    </form>
+</body>
+</html>
+{% endblock %}
