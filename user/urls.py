@@ -1,6 +1,5 @@
 # user.urls
 from django.contrib.auth.views import LoginView
-from django.shortcuts import redirect
 from django.urls import path
 from django.views.decorators.cache import cache_page
 
