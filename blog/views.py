@@ -25,3 +25,4 @@ class BlogDetailView(DetailView):
         obj.save()
         self.object = obj  # Устанавливаем self.object
         return obj
+

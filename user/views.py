@@ -1,7 +1,6 @@
 # user.views
-import secrets
-import string
-from django.contrib.auth.tokens import default_token_generator as token_generator
+import random
+
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
@@ -11,15 +10,14 @@ from django.contrib.auth.views import PasswordResetConfirmView
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.views import View
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.views.generic import FormView, CreateView
 
+from new import settings
 from new.settings import EMAIL_HOST_USER
 from .forms import UserForm, UserRegisterForm
 from .models import User
-from .utils import send_email_for_verify
 
 
 # Список пользователей
@@ -76,29 +74,17 @@ def user_delete(request, pk):
 
 
 # Подтверждение почтового адреса пользователя
-class EmailVerifyView(View):
-    success_url = reverse_lazy('user:u_login')
-
-    @staticmethod
-    def get(request, uidb64, token):
-        try:
-            # Decode uid and get the user
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
-
-        # Check token and user
-        if user is not None and token_generator.check_token(user, token):
-            # Set email_verified to True
-            user.email_verified = True
-            user.save()
-            messages.success(request, "Your email has been successfully verified")
-            return redirect('user:email_success')
-
-        # If the token is invalid, show an error message
-        messages.error(request, "The verification link is invalid or has expired")
-        return redirect('user:email_fail')
+def activate_user(request):
+    key = request.GET.get('token')
+    print(key)
+    current_user = User.objects.filter(is_verified=False, token=key)
+    print(current_user)
+    for user in current_user:
+        user.is_verified = True
+        user.token = None
+        user.save()
+    messages.success(request, 'Пользователь успешно верифицирован.')
+    return redirect(reverse_lazy('user:u_login'))
 
 
 # Выход пользователя
@@ -109,27 +95,29 @@ def user_logout(request):
     return redirect('user:u_login')
 
 
-def generate_verification_code(length=6):
-    alphabet = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(alphabet) for _ in range(length))
-
-
 class RegisterView(CreateView):
     model = User
     form_class = UserRegisterForm
-    template_name = 'user/u_register.html'
+    template_name = 'user/register.html'
     success_url = reverse_lazy('user:u_login')
 
     def form_valid(self, form):
-        # Сохраняем объект пользователя
-        user = form.save(commit=False)
-        user.save()
-
-        # Отправляем письмо для подтверждения адреса электронной почты
-        send_email_for_verify(self.request, user)
-
-        # Перенаправляем пользователя на страницу входа
-        return redirect(self.success_url)
+        new_user = form.save(commit=False)
+        new_user.is_verified = False
+        secret_token = ''.join([str(random.randint(0, 9)) for _ in range(10)])
+        new_user.token = secret_token
+        new_user.save()
+        message = (f'Вы указали этот E-mail в качестве основного адреса на нашей платформе!'
+                   f'\nДля подтверждения вашего Е-mail перейдите по ссылке '
+                   f'http://127.0.0.1:8000/user/verify/?token={secret_token}')
+        send_mail(
+            subject='Подтверждение E-mail адреса',
+            message=message,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[new_user.email]
+        )
+        messages.success(self.request, 'На ваш email отправлено письмо с инструкциями по верификации.')
+        return super().form_valid(form)
 
 
 class ResetPasswordView(FormView):

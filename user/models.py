@@ -22,7 +22,7 @@ class User(AbstractUser):
     country = models.CharField(max_length=35, verbose_name='Страна', **NULLABLE)
 
     is_verified = models.BooleanField(default=False, verbose_name='Верификация')
-    verification_code = models.CharField(max_length=100, verbose_name='Код верификации', **NULLABLE)
+    token = models.CharField(max_length=100, verbose_name='Токен', **NULLABLE)
 
     have_permissions = models.BooleanField(default=False, verbose_name='Права доступа')
     is_blocked = models.BooleanField(default=False, verbose_name="Заблокирован")
