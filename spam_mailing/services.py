@@ -18,8 +18,8 @@ def my_job():
 
     mails = Mailing.objects.all().filter(status='создана') \
         .filter(is_active=True) \
-        .filter(date_next__lte=datetime.now(pytz.timezone('Asia/Yekaterinburg'))) \
-        .filter(date_end__gte=datetime.now(pytz.timezone('Asia/Yekaterinburg')))
+        .filter(date_next__lte=timezone.now()) \
+        .filter(date_end__gte=timezone.now())
 
     for mail in mails:
         mail.status = 'запущена'
